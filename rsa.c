@@ -5,21 +5,11 @@
 
 
 void RandomPrimes(mpz_t* p, mpz_t* q);
+int GenerateKeys();
 
-int main(void)
+int main()
 {
-    mpz_t p, q;
-    mpz_init(p);
-    mpz_init(q);
-
-    RandomPrimes(&p, &q);
-
-    gmp_printf("p = %Zd\n", p);
-    gmp_printf("q = %Zd\n", q);
-
-    mpz_clear(p);
-    mpz_clear(q);
-
+    GenerateKeys();
     return 0;
 }
 
@@ -46,9 +36,19 @@ long RabinMiller()
     return 0;
 }
 
-void GenerateKeys()
+int GenerateKeys(void)
 {
-    printf("Place holder");
+    mpz_t p, q;
+    mpz_init(p);
+    mpz_init(q);
+
+    RandomPrimes(&p, &q);
+
+    gmp_printf("p = %Zd\n", p);
+    gmp_printf("q = %Zd\n", q);
+
+    mpz_clear(p);
+    mpz_clear(q);
 }
 
 char * Encryptor()
