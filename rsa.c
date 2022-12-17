@@ -93,7 +93,7 @@ void Decryptor(mpz_t cipherText)
     gmp_printf("MessageInt = %Zd\n", messaegInt);
 
     // TODO Implement the string reversal process
-    
+
     FILE *plainText_file = fopen("plaintext.txt", "w");
     mpz_out_str(plainText_file, 10, plainText);
     fclose(plainText_file);
@@ -104,28 +104,28 @@ void Decryptor(mpz_t cipherText)
 
 void Encryptor(char* plainText)
 {
-    size_t plainTextLength = strlen(plainText);
-    char bytes[plainTextLength+1];
-    strncpy(bytes, plainText, plainTextLength);
-    bytes[plainTextLength] = '\0';
+    size_t plainTextLength = strlen(plainText); // Create a size_t equal to the length of the plain text
+    char bytes[plainTextLength+1]; // Declaring an array named bytes of size plainTextLength+1
+    strncpy(bytes, plainText, plainTextLength); // Storing the characters from plainText inside bytes with a length of plainTextLength
+    bytes[plainTextLength] = '\0'; // Adding a null terminator to the destination
     //printf("%s\n", bytes);
 
     int messageInteger = 0;
-    for (int i = 0; i < plainTextLength; i++) {
-        messageInteger = (messageInteger << 8) | bytes[i];
+    for (int i = 0; i < plainTextLength; i++) { // Doing a bitshift left by 8 on the messageInterger and then ORing it with the 
+        messageInteger = (messageInteger << 8) | bytes[i]; // current element of the bytes array
     }
     printf("Message interger: %d\n", messageInteger);
 
     mpz_t cipherText, messageInt;
 
     mpz_init(cipherText);
-    mpz_init_set_si(messageInt, messageInteger);
+    mpz_init_set_si(messageInt, messageInteger); // This just makes the messageInteger an mpz_t
 
     GenerateKeys();
     gmp_printf("n = %Zd\n", n);
     gmp_printf("e = %Zd\n", e);
     //gmp_printf("messageInt = %Zd\n", messageInt);
-    mpz_powm(cipherText, messageInt, e, n);
+    mpz_powm(cipherText, messageInt, e, n); // setting cipherText equal to the messageInt raised to e modulo n
     gmp_printf("The cipher text is: %Zd\n", cipherText);
 
     FILE *cipherText_file = fopen("ciphertext.txt", "w");
