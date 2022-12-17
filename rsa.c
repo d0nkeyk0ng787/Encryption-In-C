@@ -20,28 +20,23 @@ int main(void)
     mpz_clear(p);
     mpz_clear(q);
 
-    char * plainText;
-
-    printf("Enter a string to be encrypted: ");
-    scanf("%s", &plainText);
-    //printf("%d", RandomPrimes(100000000)); 
-
-    // printf(Encryptor());
-    // printf(Decryptor());
     return 0;
 }
 
 void RandomPrimes(mpz_t* p, mpz_t* q)
 {
     int bitSize = 2048;
+    unsigned long seed = time(0);
+
     gmp_randstate_t state;
 
     gmp_randinit_default(state);
+    gmp_randseed_ui(state, seed);
 
-    mpz_urandomb(p, state, bitSize);
-    mpz_urandomb(q, state, bitSize);
-    mpz_nextprime(p, p);
-    mpz_nextprime(q, q);
+    mpz_urandomb(*p, state, bitSize);
+    mpz_urandomb(*q, state, bitSize);
+    mpz_nextprime(*p, *p);
+    mpz_nextprime(*q, *q);
 
     gmp_randclear(state);
 }
