@@ -1,15 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include <gmp.h>
+#include <arpa/inet.h>
 
 
 void RandomPrimes(mpz_t* p, mpz_t* q);
-int GenerateKeys();
+void Encryptor(char* plainText);
+
+mpz_t n, e, d;
 
 int main()
 {
-    GenerateKeys();
+    mpz_init(n);
+    mpz_init(e);
+    mpz_init(d);
+    char plainText[] = "This is an encrypted string";
+    Encryptor(plainText);
+
+    mpz_clear(n);
+    mpz_clear(e);
+    mpz_clear(d);
     return 0;
 }
 
@@ -36,16 +48,13 @@ long RabinMiller()
     return 0;
 }
 
-int GenerateKeys(void)
+void GenerateKeys(void)
 {   
-    mpz_t p, q, n, phi, e, gcd, d; // Create p, q, n, phi, e, gdc and d as multi precision point integers
+    mpz_t p, q, phi, gcd; // Create p, q, n, phi, e, gdc and d as multi precision point integers
     mpz_init(p); // Initialise p, q n, phi, e, gdc and then d 
     mpz_init(q);
-    mpz_init(n);
     mpz_init(phi);
-    mpz_init(e);
     mpz_init(gcd);
-    mpz_init(d);
 
     RandomPrimes(&p, &q); // Call the RandomPrimes function with the values for p and q
 
@@ -55,32 +64,77 @@ int GenerateKeys(void)
     mpz_mul(phi, p, q); // Calculate the toitent function to p and q
     mpz_set_str(e, "65537", 10); // Set the exponent e equal to 65537
     mpz_gcdext(gcd, d, NULL, e, phi); // Calcualte the greatest common divisor for e and phi
-    
+
     if (mpz_sgn(d) < 0)
     {
         mpz_add(d, d, phi);
     }
 
-    gmp_printf("n = %Zd\n", n);
-    gmp_printf("e = %Zd\n", e);
-    gmp_printf("d = %Zd\n", d);
+    //gmp_printf("GK n = %Zd\n", n);
+    //gmp_printf("GK e = %Zd\n", e);
+    //gmp_printf("GK d = %Zd\n", d);
 
     mpz_clear(p); // Clear the values
     mpz_clear(q);
-    mpz_clear(n);
     mpz_clear(phi);
-    mpz_clear(e);
     mpz_clear(gcd);
-    mpz_clear(d);
 }
 
-char * Encryptor()
+
+void Decryptor(mpz_t cipherText)
 {
-    return "test";
+    mpz_t messageInt;
+    
+    //gmp_printf("n = %Zd\n", n);
+    //gmp_printf("e = %Zd\n", e);
+    gmp_printf("d = %Zd\n", d);
+    mpz_init(messageInt);
+    mpz_powm(messageInt, cipherText, d, n);
+    gmp_printf("MessageInt = %Zd\n", messaegInt);
+
+    // TODO Implement the string reversal process
+    
+    FILE *plainText_file = fopen("plaintext.txt", "w");
+    mpz_out_str(plainText_file, 10, plainText);
+    fclose(plainText_file);
+
+    mpz_clear(plainText);
 }
 
-char * Decryptor()
+
+void Encryptor(char* plainText)
 {
-    return "\ntest2";
+    size_t plainTextLength = strlen(plainText);
+    char bytes[plainTextLength+1];
+    strncpy(bytes, plainText, plainTextLength);
+    bytes[plainTextLength] = '\0';
+    //printf("%s\n", bytes);
+
+    int messageInteger = 0;
+    for (int i = 0; i < plainTextLength; i++) {
+        messageInteger = (messageInteger << 8) | bytes[i];
+    }
+    printf("Message interger: %d\n", messageInteger);
+
+    mpz_t cipherText, messageInt;
+
+    mpz_init(cipherText);
+    mpz_init_set_si(messageInt, messageInteger);
+
+    GenerateKeys();
+    gmp_printf("n = %Zd\n", n);
+    gmp_printf("e = %Zd\n", e);
+    //gmp_printf("messageInt = %Zd\n", messageInt);
+    mpz_powm(cipherText, messageInt, e, n);
+    gmp_printf("The cipher text is: %Zd\n", cipherText);
+
+    FILE *cipherText_file = fopen("ciphertext.txt", "w");
+    mpz_out_str(cipherText_file, 10, cipherText);
+    fclose(cipherText_file);
+
+    Decryptor(cipherText);
+
+    mpz_clear(cipherText);
+    mpz_clear(messageInt);
 }
 
