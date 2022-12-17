@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <string.h>
 #include <gmp.h>
-#include <arpa/inet.h>
 
 
 void RandomPrimes(mpz_t* p, mpz_t* q); // Define the 2 functions above main so it knows they exist.
