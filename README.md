@@ -1,5 +1,5 @@
 # Encryption-In-C
-Implementation of various encryption algorithms in C
+Looking to implement different encryption algorithms in C.
 
 # Usage
 
